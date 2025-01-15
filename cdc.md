@@ -70,3 +70,12 @@ src/
   types/
     typing.py
 ```
+
+### Ressources
+
+Les ressources peuvent venir de différentes sources. Aucune source n'est prescrite, du moment qu'elle est citée/utilisée correctement
+
+#### Ressources déjà recensées
+
+* [🍱 Ressources](#3)
+* [Sites utiles](#2)
