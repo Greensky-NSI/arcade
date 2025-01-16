@@ -1,14 +1,15 @@
 from p5 import loadImage, PImage
+from ...typing.vars import intList, assetsDict
 
 class Drawer:
-    images: dict[str, int]
+    images: intList
     loaded = False
-    assets: dict[str, list[PImage]]
+    assets: assetsDict
     path: str
     current_folder: str
     index: int = 0
 
-    def __init__(self, path, images: dict[str, int]):
+    def __init__(self, path, images: intList):
         self.images = images
         self.path = path
         self.current_folder = images.keys()[0]
