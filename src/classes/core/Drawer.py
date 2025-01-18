@@ -38,6 +38,8 @@ class Drawer:
 
     @property
     def image(self):
+        self.index = self.index % len(self.assets[self.current_folder])
+
         return self.assets[self.current_folder][self.index]
     
     @property
@@ -45,15 +47,11 @@ class Drawer:
         return self.loaded
 
     def tick(self):
-        self.index = self.index + 1 % len(self.assets[self.current_folder])
+        self.index = (self.index + 1)
 
-        return self
-    
     def switchState(self, state):
         assert state in self.assets.keys(), f"L'état doit faire partie des images chargées ({', '.join(self.assets.keys())})"
 
         self.current_folder = state
-        self.index = 0
-
         return self
 
