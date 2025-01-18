@@ -1,10 +1,10 @@
-from p5 import loadImage, PImage
-from ...typing.vars import intList, assetsDict
+from p5 import loadImage
+from src.typing.vars import intList, assetsDict
 
 class Drawer:
     images: intList
     loaded = False
-    assets: assetsDict
+    assets: assetsDict = {}
     path: str
     current_folder: str
     index: int = 0
@@ -12,7 +12,7 @@ class Drawer:
     def __init__(self, path, images: intList):
         self.images = images
         self.path = path
-        self.current_folder = images.keys()[0]
+        self.current_folder = list(images.keys())[0]
 
         self.load()
 
@@ -25,8 +25,8 @@ class Drawer:
             self.assets[folder] = []
 
             for x in range(count):
-                path = f"{self.path}/{x}.png"
-                img: PImage = loadImage(path)
+                path = f"{self.path}/{folder}/{x}.png"
+                img = loadImage(path)
 
                 self.assets[folder].append(img)
         
@@ -50,7 +50,7 @@ class Drawer:
         return self
     
     def switchState(self, state):
-        assert state in self.assets.keys(), f"L'état doit faire partie des images chargées ({", ".join(self.assets.keys())})"
+        assert state in self.assets.keys(), f"L'état doit faire partie des images chargées ({', '.join(self.assets.keys())})"
 
         self.current_folder = state
         self.index = 0

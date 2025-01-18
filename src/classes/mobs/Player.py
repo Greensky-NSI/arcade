@@ -1,13 +1,13 @@
-from ..core.Drawer import Drawer
-from ...typing import direction
 from p5 import image, scale
-from ...utils.toolbox import check_direction, check_positive_integer
+from src.classes.core.Drawer import Drawer
+from src.typing.core import direction
+from src.utils.toolbox import check_direction, check_positive_integer
 
 class Player:
     x: int
     y: int
     drawer: Drawer
-    facing: direction
+    facing: direction = None
     height = 71
     width = 49
 
