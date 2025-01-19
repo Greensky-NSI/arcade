@@ -8,6 +8,7 @@ class Drawer:
     path: str
     current_folder: str
     index: int = 0
+    locked = False
 
     def __init__(self, path, images: intList):
         self.images = images
@@ -47,7 +48,8 @@ class Drawer:
         return self.loaded
 
     def tick(self):
-        self.index = (self.index + 1)
+        if not self.locked:
+            self.index = (self.index + 1)
 
     def switchState(self, state):
         assert state in self.assets.keys(), f"L'état doit faire partie des images chargées ({', '.join(self.assets.keys())})"
@@ -55,3 +57,11 @@ class Drawer:
         self.current_folder = state
         return self
 
+    def lockAt(self, index):
+        self.index = index % len(self.assets[self.current_folder])
+        self.locked = True
+
+        return self
+    def unlock(self):
+        self.locked = False
+        return self
