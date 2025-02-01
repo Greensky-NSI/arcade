@@ -14,5 +14,5 @@ class player_variables:
     dspeed = 3
 
 class ENV:
-    WIDTH = 1600
-    HEIGHT = 1200
+    WIDTH = 1200
+    HEIGHT = 800
