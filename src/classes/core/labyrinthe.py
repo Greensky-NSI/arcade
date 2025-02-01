@@ -1,9 +1,10 @@
-from p5 import rect, fill, circle, no_stroke, line, stroke_weight, stroke
+from p5 import rect, fill, stroke_weight, stroke, load_image, image
+from random import randint
 
 class Labyrinthe:
     ordered_list = []
 
-    def __init__(self, largeur, hauteur, taille_case):
+    def __init__(self, largeur, hauteur, taille_case, *, model_folder_name: str, model_assets_indestructibles_count: int = 0, model_assets_obstacles_count: int = 0, obstacle_proba: float = 0.95):
         self.largeur = largeur
         self.hauteur = hauteur
         self.taille_case = taille_case
@@ -12,6 +13,15 @@ class Labyrinthe:
         self.grille = [["vide" for i in range(self.nb_colonnes)] for i in range(self.nb_lignes)]
         self.obstacles = []
         self.indestructibles = []
+
+        self.modal_assets_indestructibles_count = model_assets_indestructibles_count
+        self.modal_assets_obstacles_count = model_assets_obstacles_count
+        self.obstacle_proba = obstacle_proba
+
+        self.assets = {
+            "indestructibles": [ load_image(f"src/assets/background/{model_folder_name}/indestructibles/{x}.png") for x in range(model_assets_indestructibles_count) ],
+            "obstacles": [ load_image(f"src/assets/background/{model_folder_name}/obstacles/{x}.png") for x in range(model_assets_obstacles_count) ]
+        }
 
     def obstacle(self, obstacles):
         self.obstacles = obstacles[:]
@@ -27,36 +37,45 @@ class Labyrinthe:
         for x, y in voids:
             self.grille[y][x] = "vide"
 
-    def muraille(self, x, y, *, fill_color = (80, 80, 80), stroke_color = (60, 60, 60)):
-        fill(*fill_color)
-        stroke(*stroke_color)
-        stroke_weight(3)
-        rect((x * self.taille_case, y * self.taille_case), self.taille_case, self.taille_case)
-
-        # no_stroke()
-        # circle((x * self.taille_case + self.taille_case * 0.3, y * self.taille_case + self.taille_case * 0.3), self.taille_case * 0.2)
-        # circle((x * self.taille_case + self.taille_case * 0.7, y * self.taille_case + self.taille_case * 0.7), self.taille_case * 0.2)
-        # circle((x * self.taille_case + self.taille_case * 0.5, y * self.taille_case + self.taille_case * 0.5), self.taille_case * 0.15)
-
-        # line((x * self.taille_case, y * self.taille_case), (x * self.taille_case + self.taille_case, y * self.taille_case))
-        # line((x * self.taille_case, y * self.taille_case + self.taille_case), (x * self.taille_case + self.taille_case, y * self.taille_case + self.taille_case))
-        # line((x * self.taille_case, y * self.taille_case), (x * self.taille_case, y * self.taille_case + self.taille_case))
-        # line((x * self.taille_case + self.taille_case, y * self.taille_case), (x * self.taille_case + self.taille_case, y * self.taille_case + self.taille_case))
-
     def order(self):
-        self.ordered_list = sorted([(self.grille[y][x], x, y) for y in range(self.nb_lignes) for x in range(self.nb_colonnes)], key=lambda item: ("vide", "obstacle", "indestructible").index(item[0]))
+        base_list = sorted([[self.grille[y][x], x, y]for y in range(self.nb_lignes) for x in range(self.nb_colonnes)], key=lambda item: ("vide", "obstacle", "indestructible").index(item[0]))
+
+        for i, square in enumerate(base_list):
+            if square[0] == "obstacle":
+                if randint(0, 100) > self.obstacle_proba * 100:
+                    base_list[i][0] = "vide"
+                    continue
+                base_list[i].append(randint(0, len(self.assets["obstacles"]) - 1))
+            if square[0] == "indestructible":
+                base_list[i].append(randint(0, len(self.assets["indestructibles"]) - 1))
+
+            base_list[i] = tuple(base_list[i])
+
+        self.ordered_list = base_list[:]
 
     def afficher_laby(self):
-        for square_type, x, y in self.ordered_list:
-            if square_type == "vide":
-                fill(240, 240, 255)
-                stroke(200, 200, 255)
-                rect((x * self.taille_case, y * self.taille_case), self.taille_case, self.taille_case)
-            elif square_type == "obstacle":
-                self.muraille(x, y)
-            elif square_type == "indestructible":
-                self.muraille(x, y, fill_color=(140, 100, 100), stroke_color=(120, 80, 80))
+        def ground(pos_x, pos_y):
+            fill(240, 240, 255)
+            rect((pos_x * self.taille_case, pos_y * self.taille_case), self.taille_case, self.taille_case)
 
+        for square in self.ordered_list:
+            square_type = square[0]
+            x, y = square[1], square[2]
+
+            if square_type == "vide":
+                stroke(200, 200, 255)
+                ground(x, y)
+            elif square_type == "obstacle":
+                ground(x, y)
+
+                image(self.assets["obstacles"][square[3]], x * self.taille_case, y * self.taille_case, self.taille_case, self.taille_case)
+            elif square_type == "indestructible":
+                fill(205, 205, 210)
+                stroke(200, 200, 255)
+                stroke_weight(2)
+                rect((x * self.taille_case, y * self.taille_case), self.taille_case, self.taille_case)
+
+                image(self.assets["indestructibles"][square[3]], x * self.taille_case, y * self.taille_case, self.taille_case, self.taille_case)
 
 models = {
     "one": {
