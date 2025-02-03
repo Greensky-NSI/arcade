@@ -77,5 +77,5 @@ Les ressources peuvent venir de différentes sources. Aucune source n'est prescr
 
 #### Ressources déjà recensées
 
-* [🍱 Ressources](#3)
-* [Sites utiles](#2)
+* [🍱 Ressources](https://github.com/Greensky-NSI/arcade/issues/3)
+* [🔗 Sites utiles](https://github.com/Greensky-NSI/arcade/issues/2)
