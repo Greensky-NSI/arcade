@@ -5,6 +5,7 @@ from src.typing.core import direction
 from src.utils.globals import player_variables
 from src.utils.parsers import parse_number_between_walls
 from src.utils.toolbox import check_direction, check_positive_integer
+from src.classes.mobs.Bomb import Bomb
 
 class Player:
     x: int
@@ -23,6 +24,7 @@ class Player:
 
         self.x = 0
         self.y = 0
+        self.bombs=[]
     
     @property
     def ready(self):
@@ -77,3 +79,7 @@ class Player:
         self.x, self.y = parse_number_between_walls(self.x, "WIDTH"), parse_number_between_walls(self.y, "HEIGHT")
 
         return self
+    
+    def place_bomb(self):
+        bomb=Bomb(self.x, self.y)
+        self.bombs.append(bomb)
