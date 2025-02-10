@@ -1,22 +1,28 @@
 from p5 import run, size, background
-from classes.mobs.Player import Player
+from src.classes.mobs.Player import Player
 from src.utils.globals import player_variables, ENV
 from src.typing.custom_types import *
+from src.classes.core.labyrinthe import Labyrinthe
 
 player: Player
+laby: Labyrinthe
 
 def setup():
-    global player
+    global player, laby
     background(128)
 
     size(ENV.WIDTH, ENV.HEIGHT)
     player = Player()
     player.tp(ENV.WIDTH // 2, ENV.HEIGHT // 2)
 
+    laby = Labyrinthe()
+
 def draw():
     background(128)
-    if player.ready:
+
+    if player.ready and laby.ready:
         player.draw()
+        laby.affichage_opti(player.x // laby.taille_case, player.y // laby.taille_case)
 
     if key_is_pressed:
         pressed = str(key).lower()
