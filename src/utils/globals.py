@@ -13,6 +13,9 @@ class player_variables:
 
     dspeed = 3
 
+class LabyrintheVariables:
+    square_size: int = 50
+
 class ENV:
     WIDTH = 1200
     HEIGHT = 800

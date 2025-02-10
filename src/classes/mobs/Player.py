@@ -1,10 +1,14 @@
-from p5 import image, scale, translate
+from p5 import image, scale, translate, pushMatrix, resetMatrix, popMatrix
+
+from PlayerStats import PlayerStats
 from src.classes.core.Drawer import Drawer
 from src.classes.core.Timer import Timer
 from src.typing.core import direction
 from src.utils.globals import player_variables
 from src.utils.parsers import parse_number_between_walls
 from src.utils.toolbox import check_direction, check_positive_integer
+from src.classes.mobs.Bomb import Bomb
+from typing import List
 
 class Player:
     x: int
@@ -14,6 +18,8 @@ class Player:
     height = 71
     width = 49
     tickTimer = Timer(3, 1)
+    bombs: List[Bomb] = []
+    stats = PlayerStats()
 
     def __init__(self):
         self.drawer = Drawer("src/assets/sprites/player", {
@@ -48,6 +54,8 @@ class Player:
         if self.facing in ("negx", "negy"):
             coeff = -1
 
+        resetMatrix()
+        pushMatrix()
         increment = +(self.facing in ("negx", "posx")) + 1 % 2 + self.width // 2
 
         translate(self.x, self.y)
@@ -55,8 +63,7 @@ class Player:
 
         image(img, -increment, 0)
 
-        scale(-coeff, 1)
-        translate(-self.x, -self.y)
+        popMatrix()
 
     def move(self, dir: direction, amount):
         assert check_direction(dir)
@@ -77,3 +84,11 @@ class Player:
         self.x, self.y = parse_number_between_walls(self.x, "WIDTH"), parse_number_between_walls(self.y, "HEIGHT")
 
         return self
+    
+    def place_bomb(self):
+        if len(self.bombs) >= self.stats.bombs:
+            return
+
+        bomb = Bomb(self.x - self.width // 2, self.y + self.height // 2)
+
+        self.bombs.append(bomb)

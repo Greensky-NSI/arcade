@@ -1,4 +1,5 @@
-.vscode/
+.vscode/C
 test/
 *.log
 *.env
+__pycache__/
