@@ -1,21 +1,27 @@
 from p5 import run, size, background
+from src.classes.core.Menu import Menu
 from src.classes.mobs.Player import Player
 from src.classes.mobs.Bomb import Bomb
 from src.utils.globals import player_variables, ENV
 from src.typing.custom_types import *
 
 player: Player 
+menu: Menu
 
 def setup():
-    global player
+    global menu
     background(128)
 
     size(ENV.WIDTH, ENV.HEIGHT)
-    player = Player()
-    player.tp(ENV.WIDTH // 2, ENV.HEIGHT // 2)
+    menu = Menu()
 
 def draw():
     background(128)
+    if menu.ready:
+        menu.draw()
+        
+        #TODO à compléter afin de pouvoir passer à la suite
+        return
 
     if player.ready:
         player.draw()
