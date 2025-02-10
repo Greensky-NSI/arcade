@@ -1,7 +1,6 @@
 from p5 import run, size, background
 from src.classes.core.Menu import Menu
 from src.classes.mobs.Player import Player
-from src.classes.mobs.Bomb import Bomb
 from src.utils.globals import player_variables, ENV
 from src.typing.custom_types import *
 
@@ -9,19 +8,26 @@ player: Player
 menu: Menu
 
 def setup():
-    global menu
+    global menu, player
     background(128)
 
     size(ENV.WIDTH, ENV.HEIGHT)
     menu = Menu()
+    player = Player()
 
 def draw():
     background(128)
-    if menu.ready:
+    if menu.ready and not menu.validated:
         menu.draw()
-        
-        #TODO à compléter afin de pouvoir passer à la suite
+
+        if mouse_is_pressed:
+            if menu.check_click(mouse_x, mouse_y):
+                menu.mark_validated()
+
+                player.tp(ENV.WIDTH // 2, ENV.HEIGHT // 2)
+
         return
+
 
     if player.ready:
         player.draw()

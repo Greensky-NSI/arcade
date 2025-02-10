@@ -6,6 +6,7 @@ from src.utils.globals import ENV
 
 class Menu:
     asset = None
+    validated = False
 
     def __init__(self):
         self.asset = load_image("src/assets/images/menu_bg.jpg")
@@ -13,6 +14,12 @@ class Menu:
     @property
     def ready(self):
         return self.asset is not None
+
+    def check_click(self, x: int, y: int):
+        return 524 <= x <= 675 and 379 <= y <= 447
+
+    def mark_validated(self):
+        self.validated = True
 
     def draw(self):
         image(self.asset, 0, 0, ENV.WIDTH, ENV.HEIGHT)
