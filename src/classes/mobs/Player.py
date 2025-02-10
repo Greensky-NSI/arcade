@@ -1,4 +1,4 @@
-from p5 import image, scale, translate
+from p5 import image, scale, translate, pushMatrix, resetMatrix
 from src.classes.core.Drawer import Drawer
 from src.classes.core.Timer import Timer
 from src.typing.core import direction
@@ -39,6 +39,7 @@ class Player:
         if self.tickTimer.tick():
             self.drawer.tick()
 
+        pushMatrix()
         img = self.drawer.image
 
         self.width = img.width
@@ -48,19 +49,21 @@ class Player:
         if self.facing in ("negx", "negy"):
             coeff = -1
 
-        increment = +(self.facing in ("negx", "posx")) + 1 % 2 + self.width // 2
+        increment = +(self.facing in ("negx", "negy")) * self.width
 
         translate(self.x, self.y)
         scale(coeff, 1)
 
-        image(img, -increment, 0)
+        image(img, -increment, -self.height // 2)
 
         scale(-coeff, 1)
         translate(-self.x, -self.y)
 
+        resetMatrix()
+
     def move(self, dir: direction, amount):
         assert check_direction(dir)
-        assert check_positive_integer(amount)
+        # assert check_positive_integer(amount)
 
         coeff = 1
 
