@@ -5,7 +5,6 @@ from src.utils.globals import player_variables, ENV
 from src.typing.custom_types import *
 
 player: Player 
-bombs=[]
 
 def setup():
     global player
@@ -16,16 +15,17 @@ def setup():
     player.tp(ENV.WIDTH // 2, ENV.HEIGHT // 2)
 
 def draw():
-    global bombs
     background(128)
+
     if player.ready:
         player.draw()
 
-    for bomb in bombs:
+    for bomb in player.bombs:
         if bomb.ready:
             bomb.draw()
-        if bomb.tick():
-            bombs.remove(bomb)
+            bomb.tick()
+        if bomb.exploded:
+            player.bombs.remove(bomb)
 
     if key_is_pressed:
         pressed = str(key).lower()
@@ -43,7 +43,7 @@ def draw():
             player.move("posy", 1)
             moved = True
         if key==' ':
-            bombs.append(Bomb(player.x, player.y))
+            player.place_bomb()
             moved=True
 
         if moved:
