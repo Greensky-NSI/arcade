@@ -59,5 +59,4 @@ def draw():
     else:
         player.drawer.switchState("idle")
 
-
 run()
