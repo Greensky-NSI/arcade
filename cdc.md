@@ -27,10 +27,14 @@ Lorsqu'un joueur meurt, il réapparait à son **point d'origine** (un des **4 co
 
 | Fonctionnalité | Description | État |
 |:--:|:--:|:----:|
-| Écran de titre | Faire écran de titre du jeu, avec sélection du personnage | ❌ |
-| Cartes | Faire une classe de carte, qui permet de créer facilement une carte de jeu | ❌ |
-| Joueur | Implémenter une classe joueur | 🚧 |
-| Bombe | Implémenter une classe bombe | ❌ |
+| Écran de titre | Faire écran de titre du jeu, avec sélection du personnage | 🚧 |
+| Cartes | Faire une classe de carte, qui permet de créer facilement une carte de jeu | ✅ |
+| Joueur | Implémenter une classe joueur | ✅ |
+| Bombe | Implémenter une classe bombe | 🚧 |
+| Stats | Implémenter une classe stats | ✅ |
+| Sauvegarde | Implémenter un système de sauvegarde | ❌ |
+| Menu | Implémenter un menu | 🚧 |
+| Advesaires | Créer des robots adversaires | ❌ |
 
 ### Signification des signes
 
