@@ -1,4 +1,4 @@
-from p5 import translate, image
+from p5 import translate, image, resetMatrix, pushMatrix, popMatrix
 from src.classes.core.Drawer import Drawer
 from src.classes.core.Timer import Timer
 
@@ -36,6 +36,10 @@ class Bomb:
 
         img = self.drawer.image
 
+        resetMatrix()
+        pushMatrix()
+
         translate(self.x, self.y)
         image(img, 0, 0)
-        translate(-self.x, -self.y)
+
+        popMatrix()
