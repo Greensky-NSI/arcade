@@ -1,5 +1,6 @@
 from p5 import run, size, background, PImage, load_image, image
 
+from assets.loaders.banner import LoadDraver
 from classes.mobs import Bomb
 from labyrinthe import Labyrinthe, models
 from src.classes.core.Menu import Menu
@@ -13,13 +14,17 @@ menu: Menu
 laby: Labyrinthe
 laby_started = False
 win_screen: PImage
+draver: LoadDraver
 
 
 def setup():
-    global menu, player, laby, win_screen
+    global menu, player, laby, win_screen, draver
     background(128)
 
     size(ENV.WIDTH, ENV.HEIGHT)
+
+    draver = LoadDraver()
+    draver.load()
 
     laby = Labyrinthe(ENV.WIDTH, ENV.HEIGHT, 50, obstacle_proba=.85)
 
@@ -36,7 +41,12 @@ def setup():
 
 
 def draw():
-    global laby_started, win_screen
+    global laby_started, win_screen, draver
+
+    if not draver.ended:
+        draver.draw()
+        return
+
     if menu.ready and not menu.validated:
         background(128)
 
