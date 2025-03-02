@@ -84,7 +84,7 @@ class PlayerStats:
 
     def __eq__(self, other):
         for key in self._stats.keys():
-            if self._stats[key] != other.stats[key]:
+            if self._stats[key] != other.player_stats[key]:
                 return False
         return True
 
