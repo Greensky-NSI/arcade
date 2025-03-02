@@ -1,10 +1,21 @@
-from p5 import rect, fill, stroke_weight, stroke, load_image, image
+from math import floor
 from random import randint
+from typing import Dict
+
+from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, no_stroke
+
+from classes.mobs import Bomb
+from classes.mobs.Player import Player
+
 
 class Labyrinthe:
     ordered_list = []
+    colored_by = {}
+    colors_attribution = {}
+    players: Dict[str, Player] = {}
+    won = False
 
-    def __init__(self, largeur, hauteur, taille_case, *, model_folder_name: str, model_assets_indestructibles_count: int = 0, model_assets_obstacles_count: int = 0, obstacle_proba: float = 0.95):
+    def __init__(self, largeur, hauteur, taille_case, *, obstacle_proba: float = 0.95):
         self.largeur = largeur
         self.hauteur = hauteur
         self.taille_case = taille_case
@@ -14,14 +25,26 @@ class Labyrinthe:
         self.obstacles = []
         self.indestructibles = []
 
-        self.modal_assets_indestructibles_count = model_assets_indestructibles_count
-        self.modal_assets_obstacles_count = model_assets_obstacles_count
         self.obstacle_proba = obstacle_proba
 
-        self.assets = {
-            "indestructibles": [ load_image(f"src/assets/background/{model_folder_name}/indestructibles/{x}.png") for x in range(model_assets_indestructibles_count) ],
-            "obstacles": [ load_image(f"src/assets/background/{model_folder_name}/obstacles/{x}.png") for x in range(model_assets_obstacles_count) ]
-        }
+    def register_player(self, player: Player, uuid, color):
+        self.players[uuid] = player
+        self.colors_attribution[uuid] = color
+        return self
+
+    def color_case(self, x, y, uuid):
+        self.colored_by[(x, y)] = uuid
+
+        if self.count_cases_of(uuid) >= 35:
+            self.win_game()
+
+    def count_cases_of(self, uuid):
+        return len([k for k, v in self.colored_by.items() if v == uuid])
+
+    def uncolor_cases_of(self, uuid):
+        for case in list(self.colored_by.keys())[:]:
+            if self.colored_by[case] == uuid:
+                del self.colored_by[case]
 
     def obstacle(self, obstacles):
         self.obstacles = obstacles[:]
@@ -38,44 +61,139 @@ class Labyrinthe:
             self.grille[y][x] = "vide"
 
     def order(self):
-        base_list = sorted([[self.grille[y][x], x, y]for y in range(self.nb_lignes) for x in range(self.nb_colonnes)], key=lambda item: ("vide", "obstacle", "indestructible").index(item[0]))
+        base_list = sorted([[self.grille[y][x], x, y] for y in range(self.nb_lignes) for x in range(self.nb_colonnes)], key=lambda item: ("vide", "obstacle", "indestructible").index(item[0]))
 
         for i, square in enumerate(base_list):
             if square[0] == "obstacle":
                 if randint(0, 100) > self.obstacle_proba * 100:
                     base_list[i][0] = "vide"
+                    self.grille[square[2]][square[1]] = "vide"
                     continue
-                base_list[i].append(randint(0, len(self.assets["obstacles"]) - 1))
-            if square[0] == "indestructible":
-                base_list[i].append(randint(0, len(self.assets["indestructibles"]) - 1))
-
             base_list[i] = tuple(base_list[i])
 
         self.ordered_list = base_list[:]
 
-    def afficher_laby(self):
-        def ground(pos_x, pos_y):
-            fill(240, 240, 255)
-            rect((pos_x * self.taille_case, pos_y * self.taille_case), self.taille_case, self.taille_case)
+    def blocks(self, x, y):
+        return {
+            "left": x - 1 >= 0 and self.grille[y][x - 1] != "vide",
+            "right": x + 1 < self.nb_colonnes and self.grille[y][x + 1] != "vide",
+            "up": y - 1 >= 0 and self.grille[y - 1][x] != "vide",
+            "down": y + 1 < self.nb_lignes and self.grille[y + 1][x] != "vide"
+        }
+    def to_lab_cords(self, x, y):
+        return floor(x / self.taille_case), floor(y / self.taille_case)
+    def to_real_cords(self, x, y):
+        return x * self.taille_case, y * self.taille_case
 
-        for square in self.ordered_list:
+    def display(self, square_list):
+        push_matrix()
+        for square in square_list:
             square_type = square[0]
             x, y = square[1], square[2]
 
+            stroke(20, 20, 20)
+            strokeWeight(1)
+
             if square_type == "vide":
-                stroke(200, 200, 255)
-                ground(x, y)
+                if (x, y) in self.colored_by:
+                    fill(*self.colors_attribution[self.colored_by[(x, y)]])
+                else:
+                    fill(206, 206, 206)
             elif square_type == "obstacle":
-                ground(x, y)
-
-                image(self.assets["obstacles"][square[3]], x * self.taille_case, y * self.taille_case, self.taille_case, self.taille_case)
+                fill(61, 226, 193)
             elif square_type == "indestructible":
-                fill(205, 205, 210)
-                stroke(200, 200, 255)
-                stroke_weight(2)
-                rect((x * self.taille_case, y * self.taille_case), self.taille_case, self.taille_case)
+                fill(35, 90, 132)
 
-                image(self.assets["indestructibles"][square[3]], x * self.taille_case, y * self.taille_case, self.taille_case, self.taille_case)
+            rect((x * self.taille_case, y * self.taille_case), self.taille_case, self.taille_case)
+        pop_matrix()
+
+    def affichage_opti(self, x, y):
+        x = x // self.taille_case
+        y = y // self.taille_case
+
+        x_min = max(0, x - 1)
+        x_max = min(self.nb_colonnes, x + 2)
+
+        y_min = max(0, y - 2)
+        y_max = min(self.nb_lignes, y + 3)
+
+        square_list = [(self.grille[j][i], i, j) for j in range(y_min, y_max) for i in range(x_min, x_max)]
+
+        self.display(square_list)
+
+    def afficher_laby(self):
+        self.display(self.ordered_list)
+
+    def win_game(self):
+        self.won = True
+
+    def bomb_explode_callback(self, bomb: Bomb):
+        square = self.to_lab_cords(bomb.x, bomb.y)
+        radius = bomb.stats["range"]
+
+        obstacles = {
+            "left": (None, None),
+            "right": (None, None),
+            "up": (None, None),
+            "down": (None, None)
+        }
+        for x in range(1, radius + 1):
+            if self.grille[square[1]][square[0] + x] != "vide":
+                obstacles["right"] = (square[0] + x - 1, square[1])
+                break
+        for x in range(1, radius + 1):
+            if self.grille[square[1]][square[0] - x] != "vide":
+                obstacles["left"] = (square[0] - x + 1, square[1])
+                break
+        for y in range(1, radius + 1):
+            if self.grille[square[1] + y][square[0]] != "vide":
+                obstacles["down"] = (square[0], square[1] + y - 1)
+                break
+        for y in range(1, radius + 1):
+            if self.grille[square[1] - y][square[0]] != "vide":
+                obstacles["up"] = (square[0], square[1] - y + 1)
+                break
+
+        affected_players = []
+
+        for player in self.players.values():
+            player_x, player_y = self.to_lab_cords(player.x, player.y)
+            if (obstacles["left"][0] or square[0] - radius) <= player_x <= (obstacles["right"][0] or square[0] + radius) and (obstacles["up"][1] or square[1] - radius) <= player_y <= (obstacles["down"][1] or square[1] + radius):
+                affected_players.append(player)
+
+        for k, v in obstacles.items():
+            x, y = v
+            if x is None or y is None:
+                continue
+
+            if k == "left":
+                x -= 1
+            if k == "right":
+                x += 1
+            if k == "up":
+                y -= 1
+            if k == "down":
+                y += 1
+            
+            if self.grille[y][x] == "indestructible":
+                continue
+
+            self.grille[y][x] = "vide"
+            self.affichage_opti(x * self.taille_case, y * self.taille_case)
+        self.affichage_opti(square[0] * self.taille_case, square[1] * self.taille_case)
+
+        if len(affected_players) > 0:
+            for player in affected_players:
+                player.die()
+                self.uncolor_cases_of(player.uuid)
+
+
+            base_list = [(self.grille[y][x], x, y) for y in range(self.nb_lignes) for x in range(self.nb_colonnes)]
+            self.ordered_list = base_list[:]
+
+            self.display(self.ordered_list)
+
+
 
 models = {
     "one": {
