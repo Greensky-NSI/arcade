@@ -2,7 +2,7 @@ from math import floor
 from random import randint
 from typing import Dict
 
-from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, no_stroke
+from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, no_stroke, load_image, image
 
 from classes.mobs import Bomb
 from classes.mobs.Player import Player
@@ -14,6 +14,7 @@ class Labyrinthe:
     colors_attribution = {}
     players: Dict[str, Player] = {}
     won = False
+    stats_at = {}
 
     def __init__(self, largeur, hauteur, taille_case, *, obstacle_proba: float = 0.95):
         self.largeur = largeur
@@ -26,6 +27,12 @@ class Labyrinthe:
         self.indestructibles = []
 
         self.obstacle_proba = obstacle_proba
+
+        self.assets = {
+            "bombs": load_image("src/assets/sprites/stats/bomb.png"),
+            "radius": load_image("src/assets/sprites/stats/radius.png"),
+            "speed": load_image("src/assets/sprites/stats/speed.png")
+        }
 
     def register_player(self, player: Player, uuid, color):
         self.players[uuid] = player
@@ -105,6 +112,10 @@ class Labyrinthe:
                 fill(35, 90, 132)
 
             rect((x * self.taille_case, y * self.taille_case), self.taille_case, self.taille_case)
+
+            if (x, y) in self.stats_at:
+                stat = self.stats_at[(x, y)]
+                image(self.assets[stat], x * self.taille_case + 8, y * self.taille_case + 8)
         pop_matrix()
 
     def affichage_opti(self, x, y):
@@ -179,7 +190,12 @@ class Labyrinthe:
                 continue
 
             self.grille[y][x] = "vide"
+
+            if randint(1, 100) > 40:
+                self.summon_stat(x, y)
+
             self.affichage_opti(x * self.taille_case, y * self.taille_case)
+
         self.affichage_opti(square[0] * self.taille_case, square[1] * self.taille_case)
 
         if len(affected_players) > 0:
@@ -193,6 +209,30 @@ class Labyrinthe:
 
             self.display(self.ordered_list)
 
+    def summon_stat(self, x, y):
+        available = ["speed"] * 30 + ["bombs"] * 40 + ["radius"] * 30
+        stat = available[randint(0, 99)]
+
+        self.stats_at[(x, y)] = stat
+
+    def is_on_stat(self, x, y):
+        return (x, y) in self.stats_at
+
+    def collect_stat(self, x, y, player: Player):
+        if not self.is_on_stat(x, y):
+            return
+
+        stat = self.stats_at[(x, y)]
+        if stat == "bombs":
+            player.player_stats.add_bombs(1)
+        elif stat == "speed":
+            player.player_stats.add_speed(1)
+        elif stat == "radius":
+            player.player_stats.add_range(1)
+        else:
+            raise ValueError(f"Unknown stat {stat}")
+
+        del self.stats_at[(x, y)]
 
 
 models = {

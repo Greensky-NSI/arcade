@@ -25,6 +25,7 @@ class Player:
     player_stats = PlayerStats()
     id: str
     last_tped = None
+    can_drop_bomb = [True, Timer(30, 1)]
 
     def __init__(self):
         self.drawer = Drawer("src/assets/sprites/player", {
@@ -60,6 +61,9 @@ class Player:
     def draw(self):
         if self.tickTimer.tick():
             self.drawer.tick()
+        if not self.can_drop_bomb[0]:
+            if self.can_drop_bomb[1].tick():
+                self.can_drop_bomb[0] = True
 
         img = self.drawer.image
 
@@ -99,9 +103,9 @@ class Player:
             coeff = -1
         
         if "y" in dir:
-            self.y += coeff * amount * player_variables.dspeed
+            self.y += coeff * amount * player_variables.dspeed * self.player_stats.speed
         else:
-            self.x += coeff * amount * player_variables.dspeed
+            self.x += coeff * amount * player_variables.dspeed * self.player_stats.speed
 
         if limit_to:
             if dir == "posx":
@@ -118,8 +122,10 @@ class Player:
         return self
     
     def place_bomb(self, callback = None):
-        if len(self.bombs) >= self.player_stats.bombs:
+        if len(self.bombs) >= self.player_stats.bombs or not self.can_drop_bomb[0]:
             return
+
+        self.can_drop_bomb[0] = False
 
         lab_x, lab_y = floor(self.x / 50), floor(self.y / 50)
         real_x, real_y = lab_x * 50, lab_y * 50

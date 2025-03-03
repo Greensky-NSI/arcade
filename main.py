@@ -87,6 +87,9 @@ def draw():
 
         laby.color_case(player_x, player_y, player.uuid)
 
+        if laby.is_on_stat(player_x, player_y):
+            laby.collect_stat(player_x, player_y, player)
+
         moved = False
 
         blocks = laby.blocks(player_x, player_y)
