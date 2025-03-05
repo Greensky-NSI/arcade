@@ -1,8 +1,7 @@
 from p5 import run, size, background, PImage, load_image, image
 
-from assets.loaders.banner import LoadDraver
-from classes.mobs import Bomb
-from labyrinthe import Labyrinthe, models
+from src.assets.loaders.banner import LoadDraver
+from src.classes.core.labyrinthe import Labyrinthe, models
 from src.classes.core.Menu import Menu
 from src.classes.mobs.Player import Player
 from src.typing.custom_types import *

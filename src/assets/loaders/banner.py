@@ -1,6 +1,6 @@
 from p5 import PImage, load_image, image, tint, rect, fill
 
-from Timer import Timer
+from src.classes.core.Timer import Timer
 from utils.globals import ENV
 
 
