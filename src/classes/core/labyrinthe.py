@@ -11,6 +11,9 @@ from utils.enums import DatabaseTables, ScoreTypeValues
 
 
 class Labyrinthe:
+    """
+    Classe représentant un labyrinthe avec des obstacles, des cases indestructibles et des joueurs.
+    """
     ordered_list = []
     colored_by = {}
     colors_attribution = {}
@@ -20,6 +23,14 @@ class Labyrinthe:
     database: Database
 
     def __init__(self, largeur, hauteur, taille_case, *, obstacle_proba: float = 0.95):
+        """
+        Initialise un labyrinthe.
+
+        :param largeur: int - Largeur du labyrinthe
+        :param hauteur: int - Hauteur du labyrinthe
+        :param taille_case: int - Taille d'une case du labyrinthe
+        :param obstacle_proba: float - Probabilité de génération d'obstacles (par défaut 0.95)
+        """
         self.largeur = largeur
         self.hauteur = hauteur
         self.taille_case = taille_case
@@ -41,39 +52,83 @@ class Labyrinthe:
         }
 
     def register_player(self, player: Player, uuid, color):
+        """
+        Enregistre un joueur dans le labyrinthe.
+
+        :param player: Player - Le joueur à enregistrer
+        :param uuid: str - L'identifiant unique du joueur
+        :param color: tuple - La couleur attribuée au joueur
+        :return: self
+        """
         self.players[uuid] = player
         self.colors_attribution[uuid] = color
         return self
 
     def color_case(self, x, y, uuid):
+        """
+        Colore une case du labyrinthe pour un joueur.
+
+        :param x: int - La coordonnée x de la case
+        :param y: int - La coordonnée y de la case
+        :param uuid: str - L'identifiant unique du joueur
+        """
         self.colored_by[(x, y)] = uuid
 
         if self.count_cases_of(uuid) >= 35:
             self.win_game()
 
     def count_cases_of(self, uuid):
+        """
+        Compte le nombre de cases colorées par un joueur.
+
+        :param uuid: str - L'identifiant unique du joueur
+        :return: int - Le nombre de cases colorées par le joueur
+        """
         return len([k for k, v in self.colored_by.items() if v == uuid])
 
     def uncolor_cases_of(self, uuid):
+        """
+        Décolore toutes les cases colorées par un joueur.
+
+        :param uuid: str - L'identifiant unique du joueur
+        """
         for case in list(self.colored_by.keys())[:]:
             if self.colored_by[case] == uuid:
                 del self.colored_by[case]
 
     def obstacle(self, obstacles):
+        """
+        Définit les obstacles dans le labyrinthe.
+
+        :param obstacles: list[tuple[int, int]] - La liste des coordonnées des obstacles
+        """
         self.obstacles = obstacles[:]
         for x, y in obstacles:
             self.grille[y][x] = "obstacle"
 
     def indestructible(self, indestructibles):
+        """
+        Définit les cases indestructibles dans le labyrinthe.
+
+        :param indestructibles: list[tuple[int, int]] - La liste des coordonnées des cases indestructibles
+        """
         self.indestructibles = indestructibles[:]
         for x, y in indestructibles:
             self.grille[y][x] = "indestructible"
 
     def void(self, voids):
+        """
+        Définit les cases vides dans le labyrinthe.
+
+        :param voids: list[tuple[int, int]] - La liste des coordonnées des cases vides
+        """
         for x, y in voids:
             self.grille[y][x] = "vide"
 
     def order(self):
+        """
+        Trie les cases du labyrinthe par type et les stocke dans une liste ordonnée.
+        """
         base_list = sorted([[self.grille[y][x], x, y] for y in range(self.nb_lignes) for x in range(self.nb_colonnes)], key=lambda item: ("vide", "obstacle", "indestructible").index(item[0]))
 
         for i, square in enumerate(base_list):
@@ -87,18 +142,47 @@ class Labyrinthe:
         self.ordered_list = base_list[:]
 
     def blocks(self, x, y):
+        """
+        Vérifie les blocs adjacents à une case donnée.
+
+        :param x: int - La coordonnée x de la case
+        :param y: int - La coordonnée y de la case
+        :return: dict - Un dictionnaire indiquant la présence de blocs adjacents
+        """
         return {
             "left": x - 1 >= 0 and self.grille[y][x - 1] != "vide",
             "right": x + 1 < self.nb_colonnes and self.grille[y][x + 1] != "vide",
             "up": y - 1 >= 0 and self.grille[y - 1][x] != "vide",
             "down": y + 1 < self.nb_lignes and self.grille[y + 1][x] != "vide"
         }
+
     def to_lab_cords(self, x, y):
+        """
+        Convertit des coordonnées réelles en coordonnées de labyrinthe.
+
+        :param x: int - La coordonnée x réelle
+        :param y: int - La coordonnée y réelle
+        :return: tuple - Les coordonnées de labyrinthe correspondantes
+        """
         return floor(x / self.taille_case), floor(y / self.taille_case)
+
     def to_real_cords(self, x, y):
+        """
+        Convertit des coordonnées de labyrinthe en coordonnées réelles.
+
+        :param x: int - La coordonnée x de labyrinthe
+        :param y: int - La coordonnée y de labyrinthe
+        :return:
+        """
         return x * self.taille_case, y * self.taille_case
 
     def display(self, square_list):
+        """
+        Affiche les cases du labyrinthe.
+
+        :param square_list: list[tuple[str, int, int]] - La liste des cases à afficher
+        :return:
+        """
         push_matrix()
         for square in square_list:
             square_type = square[0]
@@ -125,6 +209,14 @@ class Labyrinthe:
         pop_matrix()
 
     def affichage_opti(self, x, y):
+        """
+        Affiche les cases du labyrinthe autour d'une case donnée.
+
+        :param x: int - La coordonnée x de la case
+        :param y: int - La coordonnée y de la case
+        :return:
+        """
+
         x = x // self.taille_case
         y = y // self.taille_case
 
@@ -139,9 +231,19 @@ class Labyrinthe:
         self.display(square_list)
 
     def afficher_laby(self):
+        """
+        Affiche le labyrinthe.
+
+        :return:
+        """
         self.display(self.ordered_list)
 
     def win_game(self):
+        """
+        Indique que le jeu est gagné.
+
+        :return:
+        """
         self.won = True
 
         conn = self.database.connect()
@@ -160,6 +262,12 @@ class Labyrinthe:
         conn.close()
 
     def bomb_explode_callback(self, bomb: Bomb):
+        """
+        Callback appelé lorsqu'une bombe explose.
+
+        :param bomb: Bomb - La bombe qui a explosé
+        :return:
+        """
         square = self.to_lab_cords(bomb.x, bomb.y)
         radius = bomb.stats["range"]
 
@@ -237,15 +345,37 @@ class Labyrinthe:
             self.display(self.ordered_list)
 
     def summon_stat(self, x, y):
+        """
+        Fait apparaître une statistique à une position donnée.
+
+        :param x: int - La coordonnée x de la position
+        :param y: int - La coordonnée y de la position
+        :return:
+        """
         available = ["speed"] * 30 + ["bombs"] * 40 + ["radius"] * 30
         stat = available[randint(0, 99)]
 
         self.stats_at[(x, y)] = stat
 
     def is_on_stat(self, x, y):
+        """
+        Vérifie si une case est une statistique.
+
+        :param x: int - La coordonnée x de la case
+        :param y: int - La coordonnée y de la case
+        :return:
+        """
         return (x, y) in self.stats_at
 
     def collect_stat(self, x, y, player: Player):
+        """
+        Collecte une statistique à une position donnée.
+
+        :param x: int - La coordonnée x de la position
+        :param y: int - La coordonnée y de la position
+        :param player: Player - Le joueur qui collecte la statistique
+        :return:
+        """
         if not self.is_on_stat(x, y):
             return
 
