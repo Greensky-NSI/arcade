@@ -1,5 +1,5 @@
 import sqlite3
-from utils.enums import DatabaseTables
+from src.utils.enums import DatabaseTables
 
 
 class Database:

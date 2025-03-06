@@ -4,9 +4,9 @@ from typing import Dict
 
 from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, no_stroke, load_image, image
 
-from classes.db.Database import Database
-from classes.mobs import Bomb
-from classes.mobs.Player import Player
+from src.classes.db.Database import Database
+from src.classes.mobs import Bomb
+from src.classes.mobs.Player import Player
 from utils.enums import DatabaseTables, ScoreTypeValues
 
 

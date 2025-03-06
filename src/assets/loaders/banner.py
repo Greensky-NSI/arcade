@@ -1,7 +1,7 @@
 from p5 import PImage, load_image, image, tint, rect, fill
 
 from src.classes.core.Timer import Timer
-from utils.globals import ENV
+from src.utils.globals import ENV
 
 
 class LoadDraver:
