@@ -132,3 +132,8 @@ class Player:
         bomb = Bomb(real_x + 9, real_y + 9, self.stats, self.uuid, callback)
 
         self.bombs.append(bomb)
+
+    def increment_score(self, amount):
+        assert check_positive_integer(amount)
+
+        self.player_stats.add_score(amount)

@@ -4,8 +4,10 @@ from typing import Dict
 
 from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, no_stroke, load_image, image
 
+from classes.db.Database import Database
 from classes.mobs import Bomb
 from classes.mobs.Player import Player
+from utils.enums import DatabaseTables, ScoreTypeValues
 
 
 class Labyrinthe:
@@ -15,6 +17,7 @@ class Labyrinthe:
     players: Dict[str, Player] = {}
     won = False
     stats_at = {}
+    database: Database
 
     def __init__(self, largeur, hauteur, taille_case, *, obstacle_proba: float = 0.95):
         self.largeur = largeur
@@ -27,6 +30,9 @@ class Labyrinthe:
         self.indestructibles = []
 
         self.obstacle_proba = obstacle_proba
+
+        self.database = Database()
+        self.database.build()
 
         self.assets = {
             "bombs": load_image("src/assets/sprites/stats/bomb.png"),
@@ -138,6 +144,21 @@ class Labyrinthe:
     def win_game(self):
         self.won = True
 
+        conn = self.database.connect()
+        cursor = conn.cursor()
+
+        best_score = cursor.execute(f"SELECT score FROM {DatabaseTables.scores} WHERE type = {ScoreTypeValues.Best}").fetchone()
+        if not best_score:
+            cursor.execute(f"INSERT INTO {DatabaseTables.scores} (score, type) VALUES ({list(self.players.values())[0].stats['score']}, {ScoreTypeValues.Best})")
+        else:
+            if best_score[0] < list(self.players.values())[0].stats['score']:
+                cursor.execute(f"UPDATE {DatabaseTables.scores} SET score = {list(self.players.values())[0].stats['score']} WHERE type = {ScoreTypeValues.Best}")
+
+        cursor.execute(f"REPLACE INTO {DatabaseTables.scores} (score, type) VALUES ({list(self.players.values())[0].stats['score']}, {ScoreTypeValues.Last}) WHERE type = {ScoreTypeValues.Last}")
+
+        conn.commit()
+        conn.close()
+
     def bomb_explode_callback(self, bomb: Bomb):
         square = self.to_lab_cords(bomb.x, bomb.y)
         radius = bomb.stats["range"]
@@ -172,6 +193,9 @@ class Labyrinthe:
             if (obstacles["left"][0] or square[0] - radius) <= player_x <= (obstacles["right"][0] or square[0] + radius) and (obstacles["up"][1] or square[1] - radius) <= player_y <= (obstacles["down"][1] or square[1] + radius):
                 affected_players.append(player)
 
+                self.players[bomb.user_uuid].increment_score(1000)
+
+        destroyed = 0
         for k, v in obstacles.items():
             x, y = v
             if x is None or y is None:
@@ -190,11 +214,14 @@ class Labyrinthe:
                 continue
 
             self.grille[y][x] = "vide"
+            destroyed += 1
 
             if randint(1, 100) > 40:
                 self.summon_stat(x, y)
 
             self.affichage_opti(x * self.taille_case, y * self.taille_case)
+
+        self.players[bomb.user_uuid].increment_score(destroyed * 100)
 
         self.affichage_opti(square[0] * self.taille_case, square[1] * self.taille_case)
 
