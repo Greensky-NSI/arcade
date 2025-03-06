@@ -1,5 +1,5 @@
 from p5 import load_image, image, fill, stroke, stroke_weight, rect, scale, push_matrix, reset_matrix, text_align, \
-    CENTER, text
+    CENTER
 
 from src.utils.globals import ENV
 

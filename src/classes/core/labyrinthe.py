@@ -2,7 +2,7 @@ from math import floor
 from random import randint
 from typing import Dict
 
-from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, no_stroke, load_image, image
+from p5 import rect, fill, stroke, push_matrix, pop_matrix, strokeWeight, load_image, image
 
 from src.classes.db.Database import Database
 from src.classes.mobs import Bomb

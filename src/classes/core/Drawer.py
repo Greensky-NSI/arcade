@@ -1,5 +1,7 @@
 from p5 import loadImage
+
 from src.typing.vars import intList, assetsDict
+
 
 class Drawer:
     images: intList

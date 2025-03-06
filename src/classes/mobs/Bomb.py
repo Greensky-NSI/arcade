@@ -1,8 +1,10 @@
 from typing import Callable
 
 from p5 import translate, image, resetMatrix, pushMatrix, popMatrix
+
 from src.classes.core.Drawer import Drawer
 from src.classes.core.Timer import Timer
+
 
 class Bomb:
     tickTimer = Timer(20, 1)

@@ -1,4 +1,4 @@
-from p5 import PImage, load_image, image, tint, rect, fill
+from p5 import PImage, load_image, image, rect, fill
 
 from src.classes.core.Timer import Timer
 from src.utils.globals import ENV

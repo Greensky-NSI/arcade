@@ -1,14 +1,13 @@
 from p5 import run, size, background, PImage, load_image, image
 
 from src.assets.loaders.banner import LoadDraver
-from src.classes.core.labyrinthe import Labyrinthe, models
 from src.classes.core.Menu import Menu
+from src.classes.core.labyrinthe import Labyrinthe, models
 from src.classes.mobs.Player import Player
 from src.typing.custom_types import *
 from src.utils.globals import player_variables, ENV
 
-
-player: Player 
+player: Player
 menu: Menu
 laby: Labyrinthe
 laby_started = False

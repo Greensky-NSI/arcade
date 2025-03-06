@@ -1,8 +1,9 @@
 from math import floor
 from typing import List
+from uuid import uuid4
 
 from p5 import image, scale, translate, pushMatrix, resetMatrix, popMatrix
-from uuid import uuid4
+
 from src.classes.core.Drawer import Drawer
 from src.classes.core.PlayerStats import PlayerStats
 from src.classes.core.Timer import Timer

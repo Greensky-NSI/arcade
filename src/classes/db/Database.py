@@ -1,4 +1,5 @@
 import sqlite3
+
 from src.utils.enums import DatabaseTables
 
 
