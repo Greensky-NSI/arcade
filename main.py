@@ -1,15 +1,13 @@
 from p5 import run, size, background, PImage, load_image, image
 
-from assets.loaders.banner import LoadDraver
-from classes.mobs import Bomb
-from labyrinthe import Labyrinthe, models
+from src.assets.loaders.banner import LoadDraver
 from src.classes.core.Menu import Menu
+from src.classes.core.labyrinthe import Labyrinthe, models
 from src.classes.mobs.Player import Player
 from src.typing.custom_types import *
 from src.utils.globals import player_variables, ENV
 
-
-player: Player 
+player: Player
 menu: Menu
 laby: Labyrinthe
 laby_started = False
@@ -86,6 +84,9 @@ def draw():
         block_x, block_y = laby.to_real_cords(player_x, player_y)
 
         laby.color_case(player_x, player_y, player.uuid)
+
+        if laby.is_on_stat(player_x, player_y):
+            laby.collect_stat(player_x, player_y, player)
 
         moved = False
 

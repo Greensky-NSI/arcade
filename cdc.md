@@ -23,15 +23,22 @@ Lorsqu'un joueur meurt, il réapparait à son **point d'origine** (un des **4 co
 > Les points s'obtiennent en **détruisant des obstacles** ou en **tuant** des adversaires
 > Lorsque des obstacles sont détruits, il peuvent donner des **"stats"** ou des **armes**
 
+Un joueur peut gagner du **score** avec :
+> * **100** points par destruction d'obstacle<br>
+> * **1000** points par kill<br>
+> Il peut également perdre tout son score si il meurt.
+
 ## Charges
 
 | Fonctionnalité | Description | État |
 |:--:|:--:|:----:|
-| Écran de titre | Faire écran de titre du jeu, avec sélection du personnage | 🚧 |
-| Cartes | Faire une classe de carte, qui permet de créer facilement une carte de jeu | ✅ |
-| Joueur | Implémenter une classe joueur | ✅ |
-| Bombe | Implémenter une classe bombe | 🚧 |
-| Stats | Implémenter une classe stats | ✅ |
+| Écran de titre | Faire écran de titre du jeu, avec sélection du personnage |  ✅   |
+| Cartes | Faire une classe de carte, qui permet de créer facilement une carte de jeu |   ✅   |
+| Joueur | Implémenter une classe joueur |  ✅   |
+| Bombe | Implémenter une classe bombe |  ✅   |
+| Obstacles | Implémenter des obstacles |  ✅   |
+| Stats | Implémenter des stats |  ✅   |
+| Base de données | Implémenter une base de données pour les scores |  ✅   |
 | Sauvegarde | Implémenter un système de sauvegarde | ❌ |
 | Menu | Implémenter un menu | 🚧 |
 | Advesaires | Créer des robots adversaires | ❌ |
