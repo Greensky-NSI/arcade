@@ -39,6 +39,9 @@ Un joueur peut gagner du **score** avec :
 | Obstacles | Implémenter des obstacles |  ✅   |
 | Stats | Implémenter des stats |  ✅   |
 | Base de données | Implémenter une base de données pour les scores |  ✅   |
+| Sauvegarde | Implémenter un système de sauvegarde | ❌ |
+| Menu | Implémenter un menu | 🚧 |
+| Advesaires | Créer des robots adversaires | ❌ |
 
 ### Signification des signes
 
